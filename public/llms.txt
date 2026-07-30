@@ -1,0 +1,23 @@
+# Goalrail
+
+> A coding agent that asks instead of guessing. Goalrail installs a harness into
+> one repository; the agent works against intent you confirmed, and writes the
+> question down when it cannot proceed.
+
+Every page below is served as markdown at the URL given. Fetch them directly.
+
+## Documentation
+
+- [Install](https://goalrail.dev/docs/install.md): Goalrail is meant to be installed by the agent, not by hand.
+- [The loop](https://goalrail.dev/docs/the-loop.md): Goalrail exists for one moment: the one where an agent cannot do what was asked
+- [Commands](https://goalrail.dev/docs/commands.md): Installs the harness in one repository: the OpenSpec overlay carrying the
+- [Guarantees](https://goalrail.dev/docs/guarantees.md): These are not marketing claims. Each one is a published requirement in the
+
+## Source
+
+- [Specifications](https://github.com/heurema/goalrail/tree/main/openspec/specs): the accepted contract, in full
+- [Repository](https://github.com/heurema/goalrail): source and change history
+
+## Optional
+
+- [Everything in one file](https://goalrail.dev/llms-full.txt)

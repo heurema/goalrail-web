@@ -83,3 +83,11 @@ observability: not configured (optional)`;
 export const SPEC_URL = 'https://github.com/heurema/goalrail/tree/main/openspec/specs';
 export const REPO_URL = 'https://github.com/heurema/goalrail';
 export const CONTACT_URL = 'https://t.me/vitnm';
+
+/** The documentation pages, in reading order. Slugs match public/docs/<slug>.md. */
+export const DOC_PAGES: ReadonlyArray<{slug: string; title: string}> = [
+  {slug: 'install', title: 'Install'},
+  {slug: 'the-loop', title: 'The loop'},
+  {slug: 'commands', title: 'Commands'},
+  {slug: 'guarantees', title: 'Guarantees'},
+];

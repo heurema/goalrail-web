@@ -1,0 +1,273 @@
+# Goalrail — complete documentation
+
+Generated from the same markdown served at https://goalrail.dev/docs.
+
+# Install
+
+Goalrail is meant to be installed by the agent, not by hand.
+
+## Hand this to your agent
+
+```text
+Install Goalrail in this repository. Run `go install github.com/heurema/goalrail/cmd/gr@latest`, then `gr init` in the repository root. If it refuses to register the session hooks because the settings path is not ignored by git, read the reason it prints and re-run with `gr init --fix-gitignore`. Finally run `gr doctor` and show me its output verbatim. Do not edit any file outside this repository.
+```
+
+The last step matters: the agent proves the installation rather than claiming it.
+
+## By hand
+
+```sh
+go install github.com/heurema/goalrail/cmd/gr@latest
+gr init
+```
+
+Prebuilt binaries are not published yet, so installing needs a Go toolchain.
+
+## What `gr init` writes
+
+| Path | What it is |
+|---|---|
+| `openspec/schemas/goalrail-intent/**` | the workflow schema and its templates, materialized from a copy inside the binary |
+| `openspec/config.yaml` | created if absent; afterwards only its `schema:` key is managed |
+| `.goalrail/ambient.json` | the marker saying this repository participates — git-ignored, per clone |
+| `.claude/settings.local.json` | the session hooks, in the per-user project file, only if git ignores it |
+
+A registration a commit could carry would run in every teammate's session on one
+user's consent, so initialization refuses to write one and names what would make
+it possible. It never touches user-level scaffold configuration.
+
+## Scaffolds
+
+**Claude Code** — `gr init` is the whole attachment. The hooks live in the
+repository, so they are never invoked in unrelated sessions. A live session
+confirmed a registered hook runs with no approval step.
+
+**Codex** — registering inside a repository is blocked there by an external
+defect, so it registers at user scope:
+
+```sh
+gr connect --scaffold codex --yes
+```
+
+Then review and trust the hooks with `/hooks` inside Codex. Until you do, nothing
+runs. `gr doctor` names that exact state, which otherwise looks like a broken
+install.
+
+## Removing it
+
+```sh
+gr disconnect --scaffold <name>
+```
+
+That removes every registration, in whichever scope it lives. The files under
+`openspec/` and `.goalrail/` are ordinary repository content — deleting them is
+your act, not Goalrail's.
+
+---
+
+# The loop
+
+Goalrail exists for one moment: the one where an agent cannot do what was asked
+and would otherwise guess.
+
+## 1. A session opens
+
+The hook tells the agent, in one fixed line, that this repository accepts one
+escalation and where to write it. It names no provider, describes no task, and
+suggests no conflict.
+
+```text
+This repository accepts one escalation.
+
+If the work item cannot be completed as specified from this repository alone,
+write the question to .goalrail/blocked.md and change nothing else in
+the same act. The question is retained for the owner, who answers it as a new
+intent version; the current session does not resume.
+
+The payload format is goalrail.escalation/v0.
+```
+
+If a question from an earlier session is still sitting at that path, it is
+archived out of the way first, so a stale question is never attributed to a new
+session.
+
+## 2. The agent stops
+
+Faced with something it cannot settle — contradictory requirements, a decision
+that is not its to make — it writes the question and changes nothing else.
+
+```markdown
+# Blocked: requirements.md specifies contradictory empty-list behaviour
+
+- REQ-1 states Validate must reject an empty list and return an error.
+- REQ-2 states Validate must accept an empty list and return no error.
+
+A single implementation cannot both return an error and return nil for the
+same input.
+
+## Question for the owner
+
+Which behaviour is authoritative for an empty list — reject with an error
+(REQ-1) or accept with nil (REQ-2)?
+```
+
+That example is verbatim from a live run, not an illustration.
+
+## 3. The question is kept
+
+At the end of the session the question is retained outside the repository, in
+the state root, with its own identity, its digest, the session reference, and
+the intent it belongs to. Deleting the file from your working tree afterwards
+loses nothing.
+
+Two sessions asking a byte-identical question keep separate records, so each can
+be answered on its own.
+
+If no single active confirmed intent can be identified, the record is kept
+unbound with an explicit reason rather than bound by guessing.
+
+## 4. You answer
+
+By confirming a new version of the intent, citing the question's identifier. The
+next session works from that version.
+
+There is no dialogue, no acknowledgement, and no resume. That is deliberate: a
+second answering mechanism would be a second source of truth.
+
+## What failure looks like
+
+Nothing. A malfunction in the background path is a silent no-op toward your
+session: it starts, runs, and ends exactly as if Goalrail were not installed.
+Errors worth keeping are written to the state root, where `gr doctor` and you
+can read them later.
+
+---
+
+# Commands
+
+## `gr init`
+
+Installs the harness in one repository: the OpenSpec overlay carrying the
+Goalrail schema, the participation marker, and the session hooks where the
+scaffold's settings layer allows it. Reports what it created, what it changed,
+what it left alone, and the pinned invocation the repository is now driven by.
+
+Repeating it changes nothing. Re-running it repairs a registration that is
+stale, unscoped, or naming an event this arrangement supersedes.
+
+| Flag | Effect |
+|---|---|
+| `--repo <path>` | repository to initialize, default the working directory |
+| `--scaffold <name>` | override detection |
+| `--fix-gitignore` | add the ignore entries the registration and marker need |
+| `--confirm-schema-switch` | adopt a configuration that names another custom schema |
+
+## `gr doctor`
+
+One diagnosis of the harness in this repository: attachment state per scaffold,
+overlay drift reported per file, whether the overlay is behind the canon the
+binary carries, whether the runtime the stock OpenSpec CLI needs is present, and
+one line for observability.
+
+```
+goalrail 0.1.0 — ~/code/acme-api
+harness: working
+overlay: current (sha256:12cf770f…)
+claude-code: active (repository scope)
+openspec cli: available
+observability: not configured (optional)
+```
+
+Every state that is not working names its next action, and every action names a
+command this tool accepts. Optional absences — no Node runtime, no observability
+— are stated as facts and never make the verdict unhealthy.
+
+Exit status: `0` healthy, `1` a harness problem you can act on, `2` the check
+itself did not run. `--json` emits the same report for a machine.
+
+`gr health` still works and names its successor.
+
+## `gr update`
+
+Brings this repository's overlay up to what the installed binary carries.
+Verifies the result by digest rather than assuming the writes succeeded, reports
+every file it rewrote and which canon it moved from, and keeps the replaced
+files under the state root so the previous state is recoverable.
+
+A local edit stops it. It names the drifted files and changes nothing;
+`--discard-local-edits` proceeds and says that it discarded them.
+
+It does not update the `gr` binary, and makes no network request.
+
+## `gr connect` / `gr disconnect`
+
+`connect` attaches a scaffold that can only register at user scope; it needs
+`--yes`. For a scaffold that registers inside the repository it writes nothing
+and points at `gr init`.
+
+`disconnect` removes every registration, in whichever scope it lives, and leaves
+entries it did not add untouched.
+
+## `gr version`
+
+The binary's version and the overlay it carries. Nothing about a repository is
+decided by reading it — currency is decided by comparing digests.
+
+---
+
+# Guarantees
+
+These are not marketing claims. Each one is a published requirement in the
+project's own specifications, which live at
+[openspec/specs](https://github.com/heurema/goalrail/tree/main/openspec/specs).
+
+## Consent is never spent on your behalf
+
+Trust is a standing consent to run a command in your own sessions. It is not
+transferable, so a registration a commit could hand to a teammate is refused
+rather than written — Goalrail names the reason and what would make it possible.
+
+Initialization never modifies user-level scaffold configuration, for any reason,
+including removing a registration left by an earlier arrangement. That removal
+goes through the consented command that owns it.
+
+## Trust is never forged
+
+Goalrail does not write, compute, reproduce, or simulate a scaffold's hook-trust
+record. That this is technically possible, and is practised by other
+integrations, does not make it permissible: it would convert an explicit consent
+into an assumed one.
+
+Reading a trust record is observation and is allowed. Reporting one is not
+claiming it still matches.
+
+## A report never claims more than it verified
+
+Where something could not be established, the report says so and names the gap.
+Where a scaffold's behaviour was observed live, it is stated as observed; where
+only the provider's documentation says it, that is stated as documentation.
+
+Absent facts are reported as absent, not smoothed over.
+
+## Sessions outside initialized repositories are not observed
+
+The first act of every hook invocation is to check whether the directory is an
+initialized repository. Everywhere else it exits immediately — reading nothing,
+writing nothing, retaining nothing. The scaffold's event payload is not read
+before that check passes, because a payload can carry prompts and transcript
+paths.
+
+## A malfunction never reaches your session
+
+The background path is fail-quiet by contract. If Goalrail breaks, your session
+starts, runs, and ends as if it were not installed.
+
+The wrapper lifecycle is deliberately the opposite and stays fail-closed: a run
+it cannot certify is refused.
+
+## Nothing runs a toolchain you did not ask for
+
+No `gr` command executes Node, a package runner, or the stock OpenSpec CLI. The
+harness is inert repository content and the tool that manages it is one binary.
+Validating and archiving changes uses that CLI — that dependency is your agent's,
+and `gr doctor` reports it as a fact rather than enforcing it.
