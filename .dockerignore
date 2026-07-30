@@ -1,0 +1,9 @@
+# Everything the build produces or does not need. node_modules especially:
+# copying the host's would defeat `npm ci` and can carry the wrong platform's
+# binaries.
+node_modules
+dist
+.git
+.github
+.claude
+*.log

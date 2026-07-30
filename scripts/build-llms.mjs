@@ -26,7 +26,7 @@ const ordered = [
 const pages = [];
 for (const name of ordered) {
   const body = await readFile(join(DOCS, name), 'utf8');
-  const title = (body.match(/^#\s+(.+)$/m) ?? [, name])[1];
+  const title = body.match(/^#\s+(.+)$/m)?.[1] ?? name;
   const summary = (body.split('\n').find((line) => /^[A-Z]/.test(line)) ?? '').trim();
   pages.push({name, title, summary, body});
 }
