@@ -7,6 +7,7 @@ import './page.css';
 import {goalrailTheme} from './theme/goalrailTheme';
 import {App} from './App';
 import {Docs} from './Docs';
+import {Support} from './Support';
 import CenteredHero from './reference/CenteredHero';
 import DocumentationTechnical from './reference/DocumentationTechnical';
 
@@ -26,6 +27,8 @@ function Root() {
       <CenteredHero />
     ) : path === '/documentation-technical' ? (
       <DocumentationTechnical />
+    ) : path === '/support' ? (
+      <Support mode={mode} onModeChange={setMode} />
     ) : docsMatch ? (
       <Docs page={docsMatch[1]} mode={mode} onModeChange={setMode} />
     ) : (

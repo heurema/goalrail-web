@@ -49,6 +49,7 @@ import {
   PROMPT_NOTE,
   REPO_URL,
   SPEC_URL,
+  WALLETS,
   STATUS,
   SUBHEAD,
 } from './content';
@@ -197,6 +198,13 @@ export function App({
                 <Text type="supporting">
                   <Link href={REPO_URL}>GitHub</Link>
                 </Text>
+                {/* Hidden until there is an address to show. A support link
+                    that leads to an empty page asks twice and answers once. */}
+                {WALLETS.length > 0 ? (
+                  <Text type="supporting">
+                    <Link href="/support">Sponsor</Link>
+                  </Text>
+                ) : null}
               </HStack>
             </HStack>
           </VStack>

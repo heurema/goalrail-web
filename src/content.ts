@@ -80,6 +80,71 @@ claude-code: active (repository scope)
 openspec cli: available
 observability: not configured (optional)`;
 
+/**
+ * Sponsorship, on its own page and reachable by one word in the colophon.
+ *
+ * `WALLETS` is deliberately empty until real addresses exist. An address that
+ * is wrong, or invented to make a page look finished, sends someone's money
+ * somewhere it cannot be recovered from — so the page renders no wallet rather
+ * than a plausible one, and the colophon link stays hidden while the list is
+ * empty.
+ */
+export const SUPPORT_TITLE = 'Support';
+
+export const SUPPORT_BODY =
+  'Goalrail is founder-led and takes no funding. Sponsorship buys maintenance time — answering issues, keeping the harness working against the scaffolds it attaches to, and publishing releases.';
+
+export const SUPPORT_NOT_BUYING =
+  'It does not buy priority, a roadmap seat, or a private build. The specification is public and stays the only thing that decides what the tool does.';
+
+export const SUPPORT_NETWORK_WARNING =
+  'Each address is for the network named beside it and no other. Sending on a different network loses the funds, and nobody can return them.';
+
+/**
+ * Every address below was checked against its own checksum before it was
+ * written here, not merely copied: EIP-55 for the EVM address, bech32 for
+ * Bitcoin, base58check for Tron. Solana carries no checksum at all — it is a
+ * bare public key — so it was verified only by decoding to the 32 bytes one
+ * must be, which is the weakest guarantee on this list.
+ *
+ * The EVM networks share one entry because they share one address. Listing
+ * them separately would print the same string three times and invite a reader
+ * to compare three copies of it, which is a way to introduce an error rather
+ * than to catch one.
+ */
+export type Wallet = {
+  network: string;
+  symbol: string;
+  address: string;
+  note?: string;
+};
+
+export const WALLETS: ReadonlyArray<Wallet> = [
+  {
+    network: 'Bitcoin',
+    symbol: 'BTC',
+    address: 'bc1qn30cqehjknvjg8rt96jyqs3457n0n64m7epey8',
+    note: 'Native SegWit.',
+  },
+  {
+    network: 'Ethereum, Arbitrum, BNB Chain',
+    symbol: 'EVM',
+    address: '0xEB10f86bD0Cf8C3DBc9c8bAA0a66F38c33397230',
+    note: 'One address on all three, and on any other EVM chain. Arbitrum costs a fraction of mainnet to send on.',
+  },
+  {
+    network: 'Solana',
+    symbol: 'SOL',
+    address: 'EF4XSS6WxNAqrtaxX58tZRtxAt8mcrKsGkX2by6pnnDg',
+  },
+  {
+    network: 'Tron',
+    symbol: 'TRX',
+    address: 'TFNtDsWpHYo3qeEwngh1axymj6WG1VBaqy',
+    note: 'The cheapest route for USDT.',
+  },
+];
+
 export const SPEC_URL = 'https://github.com/heurema/goalrail/tree/main/openspec/specs';
 export const REPO_URL = 'https://github.com/heurema/goalrail';
 export const CONTACT_URL = 'https://t.me/vitnm';

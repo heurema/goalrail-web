@@ -118,3 +118,24 @@
   }
 }
 
+
+/*
+ * The sponsorship codes.
+ *
+ * Dark on light in both colour modes, on a white plate of its own. An inverted
+ * code is within the specification and most phone scanners still refuse one, so
+ * the theme does not reach in here.
+ */
+@layer astryx-page {
+  .qr {
+    inline-size: fit-content;
+    background: #ffffff;
+    border-radius: var(--radius-element);
+    padding: var(--spacing-2);
+  }
+  .qr svg {
+    display: block;
+    inline-size: 190px;
+    block-size: 190px;
+  }
+}
