@@ -1,32 +1,53 @@
-# React + TypeScript + Vite
+# goalrail-web
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The site at [goalrail.dev](https://goalrail.dev). A static React build served by
+nginx, deployed to the single-node k3s cluster through Flux.
 
-Currently, two official plugins are available:
+## Working on it
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```sh
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+```sh
+npm run lint     # oxlint
+npm run build    # the llms.txt generator, then tsc -b, then vite build
+```
+
+The build writes `public/llms.txt` and `public/llms-full.txt` from the pages in
+`public/docs`, so a documentation change updates the agent-facing index without
+a second step.
+
+## Shape
+
+| Path | What it is |
+|---|---|
+| `src/content.ts` | every string the landing page shows |
+| `src/theme/` | the Dracula/Alucard theme and the typefaces |
+| `public/docs/*.md` | the documentation source, served raw and rendered by `src/Docs.tsx` |
+| `nginx.conf` | how the routes are served, including the client-route fallback |
+| `Dockerfile` | the deployed artifact: nginx with `dist/` inside it |
+
+Components come from [Astryx](https://github.com/facebook/astryx). Its API is
+not guessable — run `npx astryx component <Name>` before using one, and
+`npx astryx docs tokens` before reaching for a colour.
+
+## Deploying
+
+There is no deploy command. Merging to `main` is the deploy:
+
+1. CI lints, type-checks, builds the image, serves it, and asserts the routes
+   that have broken before — the client-route fallback, the raw markdown an
+   agent fetches, its content type, and a missing document answering 404 rather
+   than 200 with the page shell.
+2. Only if that passes, the image is published to
+   `ghcr.io/heurema/goalrail-web` tagged `dev-<sha>-<timestamp>`.
+3. Flux scans the registry, writes the new tag into the cluster repository, and
+   rolls the deployment. A few minutes end to end.
+
+Nothing is built at pod start, and the running pod keeps serving until the new
+one is ready, so a bad image cannot take the site down.
+
+Rollback and the cluster-side configuration are documented next to the app in
+the infrastructure repository.
