@@ -87,6 +87,11 @@
     background: none;
     border: none;
     padding: 0;
+    /* The blocks here are prompts as often as they are commands, and a prompt
+       is meant to be read. Wrapping keeps the whole of one visible instead of
+       hiding its tail behind a scrollbar. */
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
   .prose table {
     width: 100%;
@@ -105,8 +110,11 @@
   }
   .prose blockquote {
     margin-inline: 0;
-    padding-inline-start: var(--spacing-3);
-    border-inline-start: 2px solid var(--color-border);
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--color-background-muted);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-element);
     color: var(--color-text-secondary);
   }
 }
+
