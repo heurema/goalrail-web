@@ -1,0 +1,24 @@
+/*
+ * The page canvas.
+ *
+ * The Theme element renders with `display: contents`, so it generates no box:
+ * a background set on it has nothing to paint and the browser canvas showed
+ * through. In dark mode that happened to match; in light mode the text flipped
+ * while the canvas did not, which is the dark-on-dark this fixes.
+ *
+ * The Layout root is the first element inside the theme that has a box, so it
+ * carries the canvas token. `.astryx-layout` is the component's documented
+ * class, which the theming reference treats as part of its contract.
+ */
+@layer astryx-page {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  .astryx-layout {
+    min-height: 100%;
+    background: var(--color-background-body);
+  }
+}
