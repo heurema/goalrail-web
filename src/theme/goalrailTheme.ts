@@ -21,11 +21,7 @@
  */
 
 import {defineTheme} from '@astryxdesign/core/theme';
-
-const MONO =
-  'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace';
-const SANS =
-  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+import {MONO, MONO_STACK, SANS, SANS_STACK} from './typefaces';
 
 /**
  * Linear — "observatory console behind dark glass."
@@ -37,9 +33,9 @@ export const goalrailTheme = defineTheme({
   color: {accent: '#8a8f98', neutralStyle: 'cool'},
   typography: {
     scale: {base: 15, ratio: 1.2},
-    body: {family: 'Inter', fallbacks: SANS},
-    heading: {family: 'Inter', fallbacks: SANS},
-    code: {family: 'ui-monospace', fallbacks: MONO},
+    body: {family: SANS, fallbacks: SANS_STACK},
+    heading: {family: SANS, fallbacks: SANS_STACK},
+    code: {family: MONO, fallbacks: MONO_STACK},
   },
   radius: {base: 4, multiplier: 1},
   motion: {fast: 120, medium: 260, ratio: 0.75},

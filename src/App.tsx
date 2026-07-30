@@ -189,8 +189,14 @@ export function App({
                 </Text>
               </StackItem>
               <HStack gap={4}>
-                <Link href={SPEC_URL}>Read the specification</Link>
-                <Link href={REPO_URL}>GitHub</Link>
+                {/* Wrapped so the links inherit the footer's size — a bare Link
+                    renders at base and left the row visibly lopsided. */}
+                <Text type="supporting">
+                  <Link href={SPEC_URL}>Read the specification</Link>
+                </Text>
+                <Text type="supporting">
+                  <Link href={REPO_URL}>GitHub</Link>
+                </Text>
               </HStack>
             </HStack>
           </VStack>
