@@ -53,7 +53,14 @@ import {
   SUBHEAD,
 } from './content';
 
-const page: CSSProperties = {maxWidth: 760, marginInline: 'auto', width: '100%'};
+const page: CSSProperties = {
+  maxWidth: 820,
+  marginInline: 'auto',
+  width: '100%',
+};
+
+/** The hero sits closer to the masthead than the rest of the rhythm allows. */
+const hero: CSSProperties = {marginBlockStart: 'var(--spacing-2)'};
 
 export function App({
   mode,
@@ -68,7 +75,7 @@ export function App({
     <Layout
       content={
         <LayoutContent padding={8}>
-          <VStack gap={10} style={page}>
+          <VStack gap={8} style={page}>
             <HStack gap={3} vAlign="center">
               <StackItem size="fill">
                 <Text type="code" color="secondary">
@@ -85,7 +92,7 @@ export function App({
               </SegmentedControl>
             </HStack>
 
-            <VStack gap={6}>
+            <VStack gap={6} style={hero}>
               <VStack gap={3}>
                 <Heading level={1} type="display-2" textWrap="balance">
                   {AGENT_ASKED}
@@ -149,11 +156,7 @@ export function App({
             <VStack gap={3}>
               <Collapsible
                 defaultIsOpen={false}
-                trigger={
-                  <Text type="supporting" color="secondary">
-                    {EVIDENCE_LABEL}
-                  </Text>
-                }>
+                trigger={<Text type="body">{EVIDENCE_LABEL}</Text>}>
                 <CodeBlock
                   code={AGENT_QUESTION}
                   language="markdown"
@@ -165,11 +168,7 @@ export function App({
               </Collapsible>
               <Collapsible
                 defaultIsOpen={false}
-                trigger={
-                  <Text type="supporting" color="secondary">
-                    {DOCTOR_LABEL}
-                  </Text>
-                }>
+                trigger={<Text type="body">{DOCTOR_LABEL}</Text>}>
                 <CodeBlock
                   code={DOCTOR_OUTPUT}
                   language="plaintext"
@@ -180,9 +179,8 @@ export function App({
                   hasCopyButton={false}
                 />
               </Collapsible>
+              <Divider />
             </VStack>
-
-            <Divider />
 
             <HStack gap={4} vAlign="center">
               <StackItem size="fill">
