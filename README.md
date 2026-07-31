@@ -41,12 +41,19 @@ a section on the commands page or an entry in `product/pin.json` saying why not.
 A command added to the product cannot pass through here unnoticed; leaving one
 out stays allowed, leaving one out silently does not.
 
-**A clock, not a pull request.** `check:claims` compares the install prompt with
-the product's README and the pin with the newest published release, and
-`.github/workflows/drift.yml` runs both daily, because drift here is caused by
-the product moving rather than by anything happening in this repository. A
-failure opens an issue. Both need the network and fail loudly without it — a
-check that passes when it did not run is the promise it was meant to replace.
+**Everything is read at the pin, including the prompt.** `check:claims`
+compares the install prompt with the README *at the pinned tag*, not at `main`.
+That was the other way round for a week, until a change landed on `main` that
+rewrote the prompt for behaviour no release carries yet — and the prompt's own
+first instruction is to download `releases/latest`. Copying it would have told
+an agent to fetch one binary and look for a report only a different one prints.
+
+**A clock, not a pull request.** What notices the product moving is the pin
+failing to be the newest published release, and `.github/workflows/drift.yml`
+runs the checks daily, because drift here is caused by the product moving rather
+than by anything happening in this repository. A failure opens an issue. All of
+it needs the network and fails loudly without it — a check that passes when it
+did not run is the promise it was meant to replace.
 
 ## Shape
 
