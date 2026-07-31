@@ -31,7 +31,12 @@
  */
 
 import {readFile} from 'node:fs/promises';
-import {INSTALL_PROMPT, INSTALL_PROMPT_VISIBLE} from '../src/content.ts';
+import {
+  DOCTOR_CAPTURE,
+  DOCTOR_OUTPUT,
+  INSTALL_PROMPT,
+  INSTALL_PROMPT_VISIBLE,
+} from '../src/content.ts';
 
 const README =
   'https://raw.githubusercontent.com/heurema/goalrail/main/README.md';
@@ -43,6 +48,12 @@ const HEADING = '### Or hand it to your agent';
 const DOC_HEADING = '## Hand this to your agent';
 
 const DOC = 'public/docs/install.md';
+
+/** Where the newest published release announces itself. */
+const LATEST = 'https://api.github.com/repos/heurema/goalrail/releases/latest';
+
+/** The page's copy of the same capture, which must not drift from the page. */
+const COMMANDS = 'public/docs/commands.md';
 
 /** One sentence stream, however the surface it came from wrapped it. */
 function normalize(text) {
@@ -163,6 +174,73 @@ report(
     : '      INSTALL_PROMPT_VISIBLE is not the opening of INSTALL_PROMPT.\n' +
         '      Shortening the prompt is how the previous version went wrong;' +
         ' the visible text may only ever be a verbatim prefix of it.',
+);
+
+// --- the doctor capture --------------------------------------------------
+
+/**
+ * A pasted terminal capture is the one artifact that cannot age gracefully: it
+ * looks exactly as authoritative the day it goes stale as the day it was taken.
+ * The version it shows is therefore compared with the newest published release,
+ * so a release is what forces a re-capture rather than someone noticing.
+ *
+ * Re-taking it is not a text edit. Install that release — `go install
+ * github.com/heurema/goalrail/cmd/gr@<tag>` stamps the tag the same way the
+ * release build does — run `gr init` and `gr doctor` in a scratch repository
+ * with a terminal attached, and paste what it prints.
+ */
+const captured = DOCTOR_OUTPUT.match(/^goalrail (v\S+)/)?.[1] ?? null;
+const claimed = DOCTOR_CAPTURE.match(/gr (v\S+)/)?.[1] ?? null;
+
+let latest = null;
+try {
+  const response = await fetch(LATEST, {
+    headers: {accept: 'application/vnd.github+json'},
+  });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+  latest = (await response.json()).tag_name;
+} catch (error) {
+  report('the doctor capture is the current release', `      ${error.message}`);
+}
+
+report(
+  'the doctor capture names the version its own caption claims',
+  captured !== null && captured === claimed
+    ? null
+    : `      the block opens with ${captured ?? 'no version'} and the caption` +
+        ` says ${claimed ?? 'none'}; they are one capture and must agree`,
+);
+
+if (latest !== null) {
+  report(
+    `the doctor capture is the current release (${latest})`,
+    captured === latest
+      ? null
+      : `      the page shows output from ${captured}, and ${latest} is` +
+          ' published. Re-run the capture against the release rather than' +
+          ' editing the version string — the other lines move too.',
+  );
+}
+
+const commands = await readFile(COMMANDS, 'utf8');
+
+report(
+  `${COMMANDS} shows the same capture as the page`,
+  commands.includes(DOCTOR_OUTPUT)
+    ? null
+    : `      the block in ${COMMANDS} is not the one in src/content.ts.` +
+        ' Two copies of one run must be one string, or a reader is comparing' +
+        ' two claims and cannot tell which is the artifact.',
+);
+
+report(
+  'the page discloses the service the update check asks',
+  DOCTOR_OUTPUT.includes('proxy.golang.org') &&
+    commands.includes('proxy.golang.org')
+    ? null
+    : '      the capture or the commands page stopped naming' +
+        ' proxy.golang.org. The report names its counterparty; a page that' +
+        ' reproduces the report must not quietly drop that line.',
 );
 
 if (failed) {

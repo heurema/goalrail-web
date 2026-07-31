@@ -96,13 +96,33 @@ Which behaviour is authoritative for an empty list — reject with an error
 
 export const DOCTOR_LABEL = 'What it reports';
 
-/** Verbatim from a run; only the repository path is substituted. */
-export const DOCTOR_OUTPUT = `goalrail 0.1.0 — ~/code/acme-api
+/**
+ * Verbatim from a run; only the repository path is substituted.
+ *
+ * The version this replaced was `goalrail 0.1.0`, which no build can produce:
+ * versions come from build information and carry the leading `v` the tag does.
+ * It also showed six of the nine lines, dropping the two that matter most to a
+ * skeptic — the attachment that is *not* active, and the update check naming the
+ * service it asked. A page selling "a report never claims more than it verified"
+ * cannot abridge the report.
+ *
+ * This one is a real run of the released binary, and it is dated below rather
+ * than left to imply it is current, because an undated capture is the same drift
+ * again one release later. `npm run check:claims` fails when a newer release
+ * makes it stale.
+ */
+export const DOCTOR_OUTPUT = `goalrail v0.1.2 — ~/code/acme-api
 harness: working
-overlay: current (sha256:12cf770f…)
+overlay: current (sha256:12cf770fb566fd4ae7bbb9d8299064cbbe9d61386c5676850a2d8f329c5ee4ad)
+codex: not active (user scope)
 claude-code: active (repository scope)
-openspec cli: available
-observability: not configured (optional)`;
+openspec cli: available (needed for validating and archiving changes with the stock OpenSpec CLI)
+observability: not configured (optional)
+update: nothing newer than v0.1.2 found as of 2026-07-31T12:13:08Z (asked proxy.golang.org)
+invocation: OPENSPEC_TELEMETRY=0 npx --yes @fission-ai/openspec@1.6.0 new change <name> --schema goalrail-intent`;
+
+export const DOCTOR_CAPTURE =
+  'Captured from gr v0.1.2 on 2026-07-31; only the repository path is substituted.';
 
 /**
  * Sponsorship, on its own page and reachable by one word in the colophon.
