@@ -1,0 +1,98 @@
+name: watch for drift
+
+# The claims check already runs on every pull request. That catches a change
+# made here, and this repository's drift is not caused by changes made here —
+# it is caused by the product moving. A release can make this site false while
+# nobody touches it, and without a clock the first thing to notice would be the
+# next unrelated pull request, whenever that happens to be.
+#
+# So the same check runs daily against the product's current state. The worst
+# case is now a day of a false page rather than however long until someone has
+# another reason to open a pull request.
+#
+# Note for a quiet period: GitHub disables scheduled workflows in a repository
+# with no activity for sixty days, and says so by email. Re-enabling it is a
+# button, but the check is not watching while it is off.
+on:
+  schedule:
+    # Off the hour on purpose: scheduled jobs queue behind everyone else's at
+    # the top of one, and this has no reason to be in that crowd.
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  claims:
+    name: check the claims against the product
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Only to raise the issue below. Nothing here writes to the repository.
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+
+      - name: Check the claims that came from the product
+        shell: bash
+        env:
+          # Lifts the API rate limit off the runner's shared address.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Without pipefail the exit status would be tee's, which is always
+          # zero — the failure this job exists to report would be invisible.
+          set -euo pipefail
+          npm run check:claims 2>&1 | tee "${RUNNER_TEMP}/claims.log"
+
+      # A red run in a repository nobody is watching is not a notification.
+      # An issue is, and it survives until someone closes it.
+      - name: Raise it where it will be seen
+        if: failure()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TITLE: The site is making a claim the product no longer supports
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+
+          # One issue, not one per day. While it is open the daily red run is
+          # the signal; a second issue would only bury the first.
+          open=$(gh issue list --state open --json number,title \
+            --jq "map(select(.title == \"${TITLE}\")) | .[0].number // empty")
+          if [ -n "${open}" ]; then
+            echo "already raised as #${open}; leaving it alone"
+            exit 0
+          fi
+
+          # Composed into a file rather than a heredoc: a heredoc terminator
+          # has to sit at the start of its line, and that ends the YAML block
+          # this script lives in.
+          body="${RUNNER_TEMP}/issue.md"
+          {
+            echo 'The daily `npm run check:claims` failed. Either the product'
+            echo 'moved and this site has not, or the check needs to learn about'
+            echo 'a change that was deliberate.'
+            echo
+            echo '```'
+            cat "${RUNNER_TEMP}/claims.log" 2>/dev/null || echo '(no output)'
+            echo '```'
+            echo
+            echo "[The run](${RUN})"
+            echo
+            echo 'Fix the page rather than the check, unless the check asserts'
+            echo 'something that stopped being true on purpose — in which case'
+            echo 'change what it asserts in the same pull request as the page,'
+            echo 'so the reason is in one diff.'
+            echo
+            echo 'Opened by `.github/workflows/drift.yml`, which does not raise'
+            echo 'a second one while this is open.'
+          } >"${body}"
+
+          gh issue create --title "${TITLE}" --body-file "${body}"
