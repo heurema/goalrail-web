@@ -21,11 +21,13 @@
  * line; those are three renderings of one sentence stream, and re-wrapping any
  * of them is not drift.
  *
- * The comparison is against the product's `main` rather than a pinned tag on
- * purpose: the point is to notice the day the product moves, not the day someone
- * remembers to bump a pin. That means this check needs the network, and it fails
- * loudly when it cannot reach it — a check that passes when it did not run is
- * the promise it was meant to replace.
+ * Everything compared against the product is compared at the release named in
+ * `product/pin.json`, for the reason set out above `readmeAt`. What notices the
+ * product moving is not any of these comparisons but the pin itself failing to
+ * be the newest published release.
+ *
+ * All of it needs the network, and it fails loudly when it cannot reach it — a
+ * check that passes when it did not run is the promise it was meant to replace.
  *
  * Run with `npm run check:claims`.
  */
@@ -45,8 +47,28 @@ import {
   INSTALL_PROMPT_VISIBLE,
 } from '../src/content.ts';
 
-const README =
-  'https://raw.githubusercontent.com/heurema/goalrail/main/README.md';
+/**
+ * The product's README, at the release this site describes — not at `main`.
+ *
+ * This was `main` at first, on the reasoning that the point is to notice the day
+ * the product moves rather than the day someone bumps a pin. Reality settled it
+ * the other way within the week. A change landed on `main` that rewrote this
+ * prompt for behaviour no release carries yet, and the two binaries were run
+ * side by side in the same fresh repository to be sure: the released one applies
+ * the registration and prints a notice naming `--fix-gitignore`, which is what
+ * the prompt here tells the agent to watch for, and the one built from `main`
+ * writes that ignore rule itself and prints no notice at all.
+ *
+ * The prompt's own first instruction is to download `releases/latest`. Copying a
+ * prompt written for an unreleased build would have told an agent to fetch one
+ * binary and then look for a report only a different one prints. So the prompt
+ * is read at the pinned tag, like everything else derived here, and the product
+ * moving is caught where it belongs — by the pin no longer being the newest
+ * release, which brings the new prompt along with the new flags and the new
+ * capture in one bump.
+ */
+const readmeAt = (tag) =>
+  `https://raw.githubusercontent.com/heurema/goalrail/${tag}/README.md`;
 
 /** The heading in the README whose blockquote is the prompt. */
 const HEADING = '### Or hand it to your agent';
@@ -122,6 +144,11 @@ function report(subject, problem) {
   console.error(problem);
 }
 
+const pin = JSON.parse(await readFile(PIN, 'utf8'));
+const surface = JSON.parse(await readFile(SURFACE, 'utf8'));
+const commands = await readFile(COMMANDS, 'utf8');
+const README = readmeAt(pin.tag);
+
 let source;
 try {
   const response = await fetch(README);
@@ -151,7 +178,7 @@ if (quoted === null) {
 const expected = normalize(quoted);
 
 report(
-  'the copied prompt matches the product README',
+  `the copied prompt matches the README at ${pin.tag}`,
   normalize(INSTALL_PROMPT) === expected
     ? null
     : `      src/content.ts INSTALL_PROMPT has drifted from ${README}\n` +
@@ -233,9 +260,6 @@ report(
  * the act that pulls the site forward, and the assertions below are what make
  * ignoring a release impossible rather than merely unwise.
  */
-const pin = JSON.parse(await readFile(PIN, 'utf8'));
-const surface = JSON.parse(await readFile(SURFACE, 'utf8'));
-const commands = await readFile(COMMANDS, 'utf8');
 
 if (latest !== null) {
   report(
