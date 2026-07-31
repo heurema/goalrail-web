@@ -48,6 +48,7 @@ import {
   HEADLINE,
   INSTALL_PROMPT,
   INSTALL_PROMPT_VISIBLE,
+  PILOT,
   PROMPT_FULL_NOTE,
   PROMPT_LABEL,
   PROMPT_NOTE,
@@ -209,16 +210,18 @@ export function App({
               <Divider />
             </VStack>
 
+            {/* The ask, in the last place a reader who got this far will look.
+                It was a colophon line before — a channel with no offer beside
+                it — and a colophon is where a contact link goes to be ignored. */}
+            <Text type="body" color="secondary">
+              {PILOT} <Link href={CONTACT_URL}>Message Vitaly on Telegram</Link>
+            </Text>
+
             {/* One stack rather than a row nested in a row: nesting cannot
                 wrap, so at phone widths the links ran off the edge and the last
                 one was unreachable. The component's own guidance is to reach
                 for wrap before nesting. */}
-            <HStack gap={4} vAlign="center" wrap="wrap">
-              <StackItem size="fill">
-                <Text type="supporting" color="secondary">
-                  Founder-led. <Link href={CONTACT_URL}>Talk to us</Link>
-                </Text>
-              </StackItem>
+            <HStack gap={4} vAlign="center" wrap="wrap" hAlign="end">
               {/* Each wrapped so the links inherit the footer's size — a bare
                   Link renders at base and left the row visibly lopsided. */}
               {/* The pages here render for people and are served as raw

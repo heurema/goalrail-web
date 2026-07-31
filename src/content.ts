@@ -98,6 +98,22 @@ export const FACTS: ReadonlyArray<{term: string; line: string}> = [
 export const GUARANTEE =
   'A malfunction never reaches your session: if Goalrail breaks, your session starts, runs, and ends as if it were not installed.';
 
+/**
+ * The ask, which the page had lost.
+ *
+ * "Founder-led. Talk to us" beside a Telegram link is a channel, not an offer:
+ * no audience named, nothing offered, no next step. The README's Pilot section
+ * has all three and this is that ask, shortened to fit the page.
+ *
+ * It asks for a conversation rather than money on purpose. Eight downloads and
+ * four unique visitors in two weeks is not an audience declining to sponsor —
+ * it is nobody there to decline, which makes every scheme priced on adoption
+ * premature and makes the first real user worth more than a second donation
+ * rail.
+ */
+export const PILOT =
+  'Goalrail is founder-led and looking for small product teams already using coding agents in real development: we can look at your setup and decide whether there is a useful first experiment.';
+
 /** Evidence. Shown small and late, for the reader who wants proof. */
 export const EVIDENCE_LABEL = 'The file it wrote';
 
@@ -153,11 +169,17 @@ export const DOCTOR_CAPTURE =
 /**
  * Sponsorship, on its own page and reachable by one word in the colophon.
  *
- * `WALLETS` is deliberately empty until real addresses exist. An address that
- * is wrong, or invented to make a page look finished, sends someone's money
- * somewhere it cannot be recovered from — so the page renders no wallet rather
- * than a plausible one, and the colophon link stays hidden while the list is
- * empty.
+ * `WALLETS` was deliberately empty until real addresses existed, and now holds
+ * four. The rule that kept it empty still governs it: an address that is wrong,
+ * or invented to make a page look finished, sends someone's money somewhere it
+ * cannot be recovered from, so nothing goes in this list that has not been
+ * verified against its own checksum by `npm run verify:wallets`, which runs in
+ * `build`. Emptying the list again hides the colophon link with it, because a
+ * support link that leads to an empty page asks twice and answers once.
+ *
+ * The ask this page does not make is the one that matters more right now. See
+ * `PILOT`: with no audience yet, a conversation with a first real user is worth
+ * more than another way to send money, and no second donation rail is coming.
  */
 export const SUPPORT_TITLE = 'Support';
 
