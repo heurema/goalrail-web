@@ -11,11 +11,15 @@
  *
  * The codes are generated in the browser from the same string the page prints.
  * A build step that emitted images could drift from the text beside them; this
- * cannot, because there is only one value. The generator is imported on demand,
- * so a reader who never opens a row never downloads it.
+ * cannot, because there is only one value.
  *
- * One row is open at a time. Six codes at once is a scanning hazard, not a
+ * One row is open at a time. Several codes at once is a scanning hazard, not a
  * feature — a phone camera happily locks onto whichever is nearest.
+ *
+ * The group is controlled rather than left to itself because a collapsed
+ * Collapsible still mounts its children. Uncontrolled, every row built its code
+ * on load, which both defeated the on-demand import and generated codes nobody
+ * had asked to see. Only the open row is rendered.
  *
  * The code is always dark on light, in both colour modes. An inverted code is
  * within the specification and most scanners still refuse it.
@@ -134,6 +138,8 @@ export function Support({
   mode: 'dark' | 'light';
   onModeChange: (mode: 'dark' | 'light') => void;
 }) {
+  const [open, setOpen] = useState('');
+
   return (
     <Layout
       content={
@@ -169,12 +175,15 @@ export function Support({
               </Text>
             </VStack>
 
-            <CollapsibleGroup type="single" hasDividers>
+            <CollapsibleGroup
+              type="single"
+              hasDividers
+              value={open}
+              onChange={(next) => setOpen(next as string)}>
               {WALLETS.map((wallet) => (
                 <Collapsible
                   key={wallet.network}
                   value={wallet.network}
-                  defaultIsOpen={false}
                   trigger={
                     <HStack gap={3} vAlign="center">
                       <StackItem size="fill">
@@ -185,7 +194,9 @@ export function Support({
                       </Text>
                     </HStack>
                   }>
-                  <WalletPanel wallet={wallet} />
+                  {open === wallet.network ? (
+                    <WalletPanel wallet={wallet} />
+                  ) : null}
                 </Collapsible>
               ))}
             </CollapsibleGroup>
