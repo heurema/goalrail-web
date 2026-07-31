@@ -194,8 +194,16 @@ const claimed = DOCTOR_CAPTURE.match(/gr (v\S+)/)?.[1] ?? null;
 
 let latest = null;
 try {
+  // Anonymous calls to this API are rate limited per address, and a runner's
+  // address is shared with everyone else building on it. A token lifts the
+  // limit far above anything this check can reach; without one it still works,
+  // which is what a local run wants.
+  const token = process.env.GITHUB_TOKEN;
   const response = await fetch(LATEST, {
-    headers: {accept: 'application/vnd.github+json'},
+    headers: {
+      accept: 'application/vnd.github+json',
+      ...(token ? {authorization: `Bearer ${token}`} : {}),
+    },
   });
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
   latest = (await response.json()).tag_name;

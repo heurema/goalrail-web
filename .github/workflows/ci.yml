@@ -29,6 +29,9 @@ jobs:
       # mode is drift rather than a broken build. Nothing else here would notice
       # the day the page starts explaining a world the tool has left.
       - name: Check the claims that came from the product
+        env:
+          # Lifts the API rate limit off the runner's shared address.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run check:claims
       # `npm run build` runs `tsc -b` before Vite, so this is the typecheck too.
       - run: npm run build
