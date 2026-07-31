@@ -74,6 +74,17 @@ jobs:
             text/markdown*) ;;
             *) echo "install.md served as ${type}, not text/markdown" >&2; exit 1 ;;
           esac
+
+          # A shared link is the first thing many readers see, and a head that
+          # loses these degrades silently: the page still renders, the card goes
+          # blank. Assert the served bytes rather than the source.
+          shell="$(curl -sS http://localhost:8080/)"
+          for tag in '<title>Goalrail' 'name="description"' 'property="og:title"' 'property="og:description"' 'property="og:url"'; do
+            case "${shell}" in
+              *"${tag}"*) ;;
+              *) echo "the served page is missing ${tag}" >&2; exit 1 ;;
+            esac
+          done
       - if: always()
         run: docker rm -f goalrail-ci || true
 

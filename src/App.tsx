@@ -44,6 +44,7 @@ import {
   DOCTOR_OUTPUT,
   EVIDENCE_LABEL,
   FACTS,
+  GUARANTEE,
   HEADLINE,
   INSTALL_PROMPT,
   INSTALL_PROMPT_VISIBLE,
@@ -164,6 +165,14 @@ export function App({
               ))}
             </Grid>
 
+            {/* The strongest thing the specification says, which the page used
+                to keep only in a document nobody was pointed at. It answers the
+                objection the install itself raises, so it sits with the facts
+                rather than behind a disclosure. */}
+            <Text type="body" color="secondary">
+              {GUARANTEE} <Link href="/docs/guarantees">Read the guarantees</Link>
+            </Text>
+
             <VStack gap={3}>
               <Collapsible
                 defaultIsOpen={false}
@@ -200,29 +209,37 @@ export function App({
               <Divider />
             </VStack>
 
-            <HStack gap={4} vAlign="center">
+            {/* One stack rather than a row nested in a row: nesting cannot
+                wrap, so at phone widths the links ran off the edge and the last
+                one was unreachable. The component's own guidance is to reach
+                for wrap before nesting. */}
+            <HStack gap={4} vAlign="center" wrap="wrap">
               <StackItem size="fill">
                 <Text type="supporting" color="secondary">
                   Founder-led. <Link href={CONTACT_URL}>Talk to us</Link>
                 </Text>
               </StackItem>
-              <HStack gap={4}>
-                {/* Wrapped so the links inherit the footer's size — a bare Link
-                    renders at base and left the row visibly lopsided. */}
+              {/* Each wrapped so the links inherit the footer's size — a bare
+                  Link renders at base and left the row visibly lopsided. */}
+              {/* The pages here render for people and are served as raw
+                  markdown for agents; before this the only documentation link
+                  on the page sent a human to a specifications tree. */}
+              <Text type="supporting">
+                <Link href="/docs/install">Documentation</Link>
+              </Text>
+              <Text type="supporting">
+                <Link href={SPEC_URL}>Read the specification</Link>
+              </Text>
+              <Text type="supporting">
+                <Link href={REPO_URL}>GitHub</Link>
+              </Text>
+              {/* Hidden until there is an address to show. A support link
+                  that leads to an empty page asks twice and answers once. */}
+              {WALLETS.length > 0 ? (
                 <Text type="supporting">
-                  <Link href={SPEC_URL}>Read the specification</Link>
+                  <Link href="/support">Sponsor</Link>
                 </Text>
-                <Text type="supporting">
-                  <Link href={REPO_URL}>GitHub</Link>
-                </Text>
-                {/* Hidden until there is an address to show. A support link
-                    that leads to an empty page asks twice and answers once. */}
-                {WALLETS.length > 0 ? (
-                  <Text type="supporting">
-                    <Link href="/support">Sponsor</Link>
-                  </Text>
-                ) : null}
-              </HStack>
+              ) : null}
             </HStack>
           </VStack>
         </LayoutContent>

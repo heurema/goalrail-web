@@ -21,7 +21,19 @@ export const AGENT_ATTRIBUTION = 'your agent, instead of guessing';
 
 export const HEADLINE = 'A coding agent that asks instead of guessing.';
 
-export const SUBHEAD = 'One command installs it. Your sessions do not change.';
+/**
+ * The category, because the headline above is a claim about behaviour and a
+ * reader supplies the category themselves. "A coding agent that asks" parses as
+ * another agent to install, which a Claude Code user already has, and the reader
+ * leaves before the page can correct it — the README corrects it four lines
+ * under the same tagline, and the page had nowhere that did.
+ *
+ * It also names a supported tool in positive terms, which nothing on the page
+ * did. Codex is supported too and is named in the status line instead, because
+ * it needs one more consented step and a subhead cannot carry the difference.
+ */
+export const SUBHEAD =
+  'Not another agent — a harness for the agent you already use, in Claude Code today.';
 
 /**
  * The payload of the page. Copying this is the only action we ask for.
@@ -68,9 +80,23 @@ export const FACTS: ReadonlyArray<{term: string; line: string}> = [
   },
   {
     term: 'It stays yours',
-    line: 'Never your user-level config, never a file a commit could hand to a teammate.',
+    // "Never your user-level config" was false on a supported path: attaching
+    // Codex writes to the home directory, because Codex cannot register inside
+    // a repository. The anchor is consent, not never — nothing lands at user
+    // level except through a command you run for that purpose.
+    line: 'Nothing at user level except through a command you run for it, and never a file a commit could hand to a teammate.',
   },
 ];
+
+/**
+ * The objection this product exists to answer, in the words it is published in.
+ *
+ * A reader is being asked to install a hook into their agent's session startup,
+ * and the first thing they want to know is what happens when it breaks. The
+ * specification answers it and the page never said so.
+ */
+export const GUARANTEE =
+  'A malfunction never reaches your session: if Goalrail breaks, your session starts, runs, and ends as if it were not installed.';
 
 /** Evidence. Shown small and late, for the reader who wants proof. */
 export const EVIDENCE_LABEL = 'The file it wrote';

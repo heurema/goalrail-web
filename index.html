@@ -4,7 +4,40 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>goalrail-web</title>
+
+    <!--
+      The tab said `goalrail-web`, which is this repository's name and not the
+      product's, and there was no description and no Open Graph at all — so
+      every shared link rendered as a bare URL.
+
+      The description is the product README's own first paragraph, shortened
+      rather than rewritten, so the two cannot say different things about what
+      this is.
+
+      One set of tags serves every route: the site is a static shell and the
+      client picks the view, so /docs and /support share this head. Per-route
+      cards would need prerendering, which is a larger change than the empty
+      card is worth.
+
+      There is deliberately no og:image. The only images here are a favicon and
+      a 343×361 asset, neither of which is a 1200×630 card, and a stretched one
+      looks worse than none — a card with a title and a description renders
+      fine without it.
+    -->
+    <title>Goalrail — your agent asks instead of guessing</title>
+    <meta
+      name="description"
+      content="A harness you install into one repository: when the work cannot be done as specified, the agent you already use writes the question down and stops instead of inventing an answer."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://goalrail.dev/" />
+    <meta property="og:site_name" content="Goalrail" />
+    <meta property="og:title" content="Goalrail — your agent asks instead of guessing" />
+    <meta
+      property="og:description"
+      content="A harness you install into one repository: when the work cannot be done as specified, the agent you already use writes the question down and stops instead of inventing an answer."
+    />
+    <meta name="twitter:card" content="summary" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
