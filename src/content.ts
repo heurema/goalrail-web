@@ -99,6 +99,21 @@ export const GUARANTEE =
   'A malfunction never reaches your session: if Goalrail breaks, your session starts, runs, and ends as if it were not installed.';
 
 /**
+ * The claim a competitor cannot copy without paying what it cost.
+ *
+ * Everything else on this page is the project describing itself, which every
+ * project does. This is the project naming the times it was wrong in public,
+ * dated and still in the repository beside the change that fixed each one.
+ *
+ * The number is counted rather than estimated, and counting it changed it: a
+ * draft was going to cite the macOS quarantine claim, which never reached a
+ * published document — it was disproved while the documentation was still being
+ * written. Three is what reached users. If it grows, the page grows.
+ */
+export const CORRECTIONS =
+  'Three claims this project published turned out to be false, and each one is named, dated, and still in the repository beside the change that corrected it.';
+
+/**
  * The ask, which the page had lost.
  *
  * "Founder-led. Talk to us" beside a Telegram link is a channel, not an offer:
@@ -247,4 +262,5 @@ export const DOC_PAGES: ReadonlyArray<{slug: string; title: string}> = [
   {slug: 'the-loop', title: 'The loop'},
   {slug: 'commands', title: 'Commands'},
   {slug: 'guarantees', title: 'Guarantees'},
+  {slug: 'corrections', title: 'Corrections'},
 ];
