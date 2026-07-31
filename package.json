@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "llms": "node scripts/build-llms.mjs",
     "verify:wallets": "node --experimental-strip-types scripts/verify-wallets.mjs",
-    "check:claims": "node --experimental-strip-types scripts/check-claims.mjs"
+    "check:claims": "node --experimental-strip-types scripts/check-claims.mjs",
+    "sync:product": "node scripts/sync-product.mjs"
   },
   "dependencies": {
     "@astryxdesign/cli": "^0.1.9",

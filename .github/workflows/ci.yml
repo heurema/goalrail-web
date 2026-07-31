@@ -33,6 +33,11 @@ jobs:
           # Lifts the API rate limit off the runner's shared address.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run check:claims
+      # Downloads the pinned release and asks it what it accepts. The pull
+      # request that bumps the pin is the one where this matters most, which is
+      # why it runs here and not only on the daily schedule.
+      - name: Check the reference against the pinned release
+        run: npm run sync:product -- --check
       # `npm run build` runs `tsc -b` before Vite, so this is the typecheck too.
       - run: npm run build
       # The deployed artifact is the image, not the directory, so the image is

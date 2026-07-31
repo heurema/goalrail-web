@@ -10,12 +10,14 @@ what it left alone, and the pinned invocation the repository is now driven by.
 Repeating it changes nothing. Re-running it repairs a registration that is
 stale, unscoped, or naming an event this arrangement supersedes.
 
+<!-- generated: gr init --help -->
 | Flag | Effect |
 |---|---|
-| `--repo <path>` | repository to initialize, default the working directory |
-| `--scaffold <name>` | override detection |
-| `--fix-gitignore` | add the ignore entries the registration and marker need |
-| `--confirm-schema-switch` | adopt a configuration that names another custom schema |
+| `--confirm-schema-switch` | switch an OpenSpec configuration that names another custom schema |
+| `--fix-gitignore` | add the ignore entries the registration and the marker need |
+| `--repo <string>` | repository to initialize (default ".") |
+| `--scaffold <string>` | codex or claude-code; omit to detect |
+<!-- /generated -->
 
 ## `gr doctor`
 
@@ -73,6 +75,15 @@ itself did not run. `--json` emits the same report for a machine.
 
 `gr health` still works and names its successor.
 
+<!-- generated: gr doctor --help -->
+| Flag | Effect |
+|---|---|
+| `--json` | emit the diagnosis as JSON |
+| `--repo <string>` | repository to diagnose (default ".") |
+| `--scaffold <string>` | codex or claude-code; omit to report every supported scaffold |
+| `--state-dir <string>` | Goalrail local state directory |
+<!-- /generated -->
+
 ## `gr update`
 
 Brings this repository's overlay up to what the installed binary carries.
@@ -88,6 +99,14 @@ The diagnosis is the only command that reaches the network, and only for the
 update check described above; initialization, this command, the session hooks,
 and the escalation loop reaching it would each violate a published requirement.
 
+<!-- generated: gr update --help -->
+| Flag | Effect |
+|---|---|
+| `--discard-local-edits` | replace overlay files that differ from the canon, discarding local edits |
+| `--repo <string>` | repository whose harness to update (default ".") |
+| `--state-dir <string>` | Goalrail local state directory |
+<!-- /generated -->
+
 ## `gr connect` / `gr disconnect`
 
 `connect` attaches a scaffold that can only register at user scope; it needs
@@ -96,6 +115,20 @@ and points at `gr init`.
 
 `disconnect` removes every registration, in whichever scope it lives, and leaves
 entries it did not add untouched.
+
+<!-- generated: gr connect --help -->
+| Flag | Effect |
+|---|---|
+| `--scaffold <string>` | codex or claude-code |
+| `--yes` | consent to modifying the scaffold configuration |
+<!-- /generated -->
+
+<!-- generated: gr disconnect --help -->
+| Flag | Effect |
+|---|---|
+| `--repo <string>` | repository whose registration to remove (default ".") |
+| `--scaffold <string>` | codex or claude-code |
+<!-- /generated -->
 
 ## `gr version`
 

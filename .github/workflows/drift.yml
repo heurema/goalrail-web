@@ -39,7 +39,7 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
 
-      - name: Check the claims that came from the product
+      - name: Check the claims and the reference against the product
         shell: bash
         env:
           # Lifts the API rate limit off the runner's shared address.
@@ -47,8 +47,15 @@ jobs:
         run: |
           # Without pipefail the exit status would be tee's, which is always
           # zero — the failure this job exists to report would be invisible.
-          set -euo pipefail
-          npm run check:claims 2>&1 | tee "${RUNNER_TEMP}/claims.log"
+          set -uo pipefail
+
+          # Both run even when the first fails: the issue this opens should
+          # carry everything that is wrong, not the first thing.
+          status=0
+          npm run check:claims 2>&1 | tee "${RUNNER_TEMP}/claims.log" || status=1
+          npm run sync:product -- --check 2>&1 \
+            | tee -a "${RUNNER_TEMP}/claims.log" || status=1
+          exit "${status}"
 
       # A red run in a repository nobody is watching is not a notification.
       # An issue is, and it survives until someone closes it.
