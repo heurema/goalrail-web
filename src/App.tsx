@@ -39,6 +39,7 @@ import {
   AGENT_ATTRIBUTION,
   AGENT_QUESTION,
   CONTACT_URL,
+  DOCTOR_CAPTURE,
   DOCTOR_LABEL,
   DOCTOR_OUTPUT,
   EVIDENCE_LABEL,
@@ -179,15 +180,22 @@ export function App({
               <Collapsible
                 defaultIsOpen={false}
                 trigger={<Text type="body">{DOCTOR_LABEL}</Text>}>
-                <CodeBlock
-                  code={DOCTOR_OUTPUT}
-                  language="plaintext"
-                  title="gr doctor"
-                  width="100%"
-                  size="sm"
-                  isWrapped
-                  hasCopyButton={false}
-                />
+                <VStack gap={2}>
+                  <CodeBlock
+                    code={DOCTOR_OUTPUT}
+                    language="plaintext"
+                    title="gr doctor"
+                    width="100%"
+                    size="sm"
+                    isWrapped
+                    hasCopyButton={false}
+                  />
+                  {/* A capture without a date is a claim that it is current.
+                      This one says which binary printed it and when. */}
+                  <Text type="supporting" color="secondary">
+                    {DOCTOR_CAPTURE}
+                  </Text>
+                </VStack>
               </Collapsible>
               <Divider />
             </VStack>

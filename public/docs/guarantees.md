@@ -32,6 +32,23 @@ only the provider's documentation says it, that is stated as documentation.
 
 Absent facts are reported as absent, not smoothed over.
 
+## A line that rests on a network answer names its counterparty
+
+One `gr` command reaches the network: the diagnosis, asking `proxy.golang.org`
+whether a newer release exists. Initialization, the update command, the session
+hooks, and the escalation loop reaching it would each violate this requirement.
+
+Where a reported line rests on an answer from a network source, the report names
+that source — so the disclosure is where you are, not only in documentation.
+Where there is no answer and no counterparty, it names none.
+
+The request discloses nothing that identifies the tool, its version, its
+platform, the repository, or the invocation, and carries no query parameter: its
+shape is the standard one the toolchain itself produces. A refusal you have
+already given the toolchain is honoured rather than worked around, a dedicated
+switch turns the check off on its own, and it never runs in continuous
+integration.
+
 ## Sessions outside initialized repositories are not observed
 
 The first act of every hook invocation is to check whether the directory is an
