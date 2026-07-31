@@ -25,6 +25,11 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run lint
+      # This repository describes a product it does not contain, so its failure
+      # mode is drift rather than a broken build. Nothing else here would notice
+      # the day the page starts explaining a world the tool has left.
+      - name: Check the claims that came from the product
+        run: npm run check:claims
       # `npm run build` runs `tsc -b` before Vite, so this is the typecheck too.
       - run: npm run build
       # The deployed artifact is the image, not the directory, so the image is

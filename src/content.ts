@@ -23,14 +23,38 @@ export const HEADLINE = 'A coding agent that asks instead of guessing.';
 
 export const SUBHEAD = 'One command installs it. Your sessions do not change.';
 
-/** The payload of the page. Copying this is the only action we ask for. */
-export const INSTALL_PROMPT = `Install Goalrail in this repository. Run \`go install github.com/heurema/goalrail/cmd/gr@latest\`, then \`gr init\` in the repository root. Finally run \`gr doctor\` and show me its output verbatim.`;
+/**
+ * The payload of the page. Copying this is the only action we ask for.
+ *
+ * It is not written here. It is the blockquote under "Or hand it to your agent"
+ * in the product's README, unwrapped to one line and otherwise byte-identical,
+ * because that wording was paid for twice: two live agent runs produced it, and
+ * the earlier version this replaced told the agent to watch for a refusal that
+ * initialization does not perform. `npm run check:claims` fails when the two
+ * diverge, so this copy cannot go stale quietly.
+ */
+export const INSTALL_PROMPT = `Install Goalrail in this repository. Do not use \`go install\`; this machine may have no Go toolchain. Fetch \`https://github.com/heurema/goalrail/releases/latest/download/checksums.txt\`, pick the archive matching this machine's operating system and architecture — \`darwin_arm64\`, \`darwin_amd64\`, \`linux_amd64\`, or \`linux_arm64\` — and download it from that same \`releases/latest/download/\` prefix. Verify it with \`shasum -a 256 --ignore-missing -c checksums.txt\` on macOS or \`sha256sum --ignore-missing -c checksums.txt\` on Linux. Extract \`gr\` into \`~/.local/bin\`: that one write outside this repository is expected, and the binary has to stay there because the session hooks record its absolute path. Then run \`~/.local/bin/gr init\` in the repository root. If its report says anything is not ignored by git — the settings path it registers the hooks in, or the marker file — re-run with \`~/.local/bin/gr init --fix-gitignore\`, which adds those entries. If it says no supported scaffold was detected, tell me that verbatim without guessing why: the harness is still installed, and the diagnosis will report the attachment as missing for that reason rather than because anything failed. Finally run \`~/.local/bin/gr doctor\` and show me its output verbatim. Apart from \`~/.local/bin/gr\`, Goalrail's own state directory at \`~/.local/state/goalrail\` — which \`gr doctor\` writes its update-check cache into — and a scratch download directory you clean up, do not edit any file outside this repository.`;
+
+/**
+ * What the card shows, as opposed to what the button copies.
+ *
+ * The full prompt is two hundred words of platform detail, and a page that
+ * prints all of it asks the reader to audit an instruction they were going to
+ * paste unread anyway. Shortening it is not an option — the shortened version
+ * is what was wrong before — so the card shows a verbatim prefix and says that
+ * it is one. The check asserts this is a prefix rather than a paraphrase.
+ */
+export const INSTALL_PROMPT_VISIBLE =
+  'Install Goalrail in this repository. Do not use `go install`; this machine may have no Go toolchain.';
 
 export const PROMPT_LABEL = 'Hand this to your agent';
 
 export const PROMPT_NOTE = 'The last step is the point: it proves the install rather than claiming it.';
 
-export const STATUS = 'Early. Needs Go. Codex needs one more consented step.';
+export const PROMPT_FULL_NOTE =
+  'The button copies the whole prompt: it names the archive to download, the checksum to verify, and the one path outside this repository the agent may write.';
+
+export const STATUS = 'Early. macOS and Linux, no Go toolchain needed. Codex needs one more consented step.';
 
 /** Three facts, one line each. Not a features grid — these are boundaries. */
 export const FACTS: ReadonlyArray<{term: string; line: string}> = [
