@@ -39,6 +39,7 @@ import {
   AGENT_ATTRIBUTION,
   AGENT_QUESTION,
   CONTACT_URL,
+  CORRECTIONS,
   DOCTOR_CAPTURE,
   DOCTOR_LABEL,
   DOCTOR_OUTPUT,
@@ -172,6 +173,14 @@ export function App({
                 rather than behind a disclosure. */}
             <Text type="body" color="secondary">
               {GUARANTEE} <Link href="/docs/guarantees">Read the guarantees</Link>
+            </Text>
+
+            {/* The one claim here a competitor cannot copy without paying what
+                it cost. It sits next to the guarantee on purpose: a promise and
+                the record of the times the promise failed belong together. */}
+            <Text type="body" color="secondary">
+              {CORRECTIONS}{' '}
+              <Link href="/docs/corrections">See what we got wrong</Link>
             </Text>
 
             <VStack gap={3}>

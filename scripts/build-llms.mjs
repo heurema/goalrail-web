@@ -15,7 +15,13 @@ import {join} from 'node:path';
 const DOCS = 'public/docs';
 const SITE = 'https://goalrail.dev';
 
-const ORDER = ['install.md', 'the-loop.md', 'commands.md', 'guarantees.md'];
+const ORDER = [
+  'install.md',
+  'the-loop.md',
+  'commands.md',
+  'guarantees.md',
+  'corrections.md',
+];
 
 const files = (await readdir(DOCS)).filter((name) => name.endsWith('.md'));
 const ordered = [
