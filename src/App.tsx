@@ -45,6 +45,8 @@ import {
   FACTS,
   HEADLINE,
   INSTALL_PROMPT,
+  INSTALL_PROMPT_VISIBLE,
+  PROMPT_FULL_NOTE,
   PROMPT_LABEL,
   PROMPT_NOTE,
   REPO_URL,
@@ -128,8 +130,15 @@ export function App({
                     }}
                   />
                 </HStack>
+                {/* The prefix, not the prompt. What the button copies is two
+                    hundred words; printing them here would ask the reader to
+                    audit an instruction they were going to paste unread. */}
                 <Text type="code" color="secondary">
-                  {INSTALL_PROMPT}
+                  {INSTALL_PROMPT_VISIBLE} …
+                </Text>
+                <Text type="supporting" color="secondary">
+                  {PROMPT_FULL_NOTE}{' '}
+                  <Link href="/docs/install">Read it in full</Link>
                 </Text>
                 <Divider />
                 <Text type="supporting" color="secondary">
