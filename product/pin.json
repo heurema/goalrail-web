@@ -1,0 +1,24 @@
+{
+  "$comment": [
+    "Which release of the product this site describes. Hand-maintained.",
+    "",
+    "Bumping this is the act that pulls the site forward: `npm run sync:product`",
+    "downloads that release, asks the binary what it accepts, and rewrites the",
+    "generated blocks from the answer. The diff of that bump is the list of what",
+    "changed in the product, which is also the list of prose worth re-reading.",
+    "",
+    "`undocumented` is the other half. Every command the binary accepts must",
+    "either have a section in public/docs/commands.md or appear here with a",
+    "reason, and the check fails otherwise — so a command added to the product",
+    "cannot pass through this repository unnoticed. Leaving one out is allowed;",
+    "leaving one out silently is not."
+  ],
+  "tag": "v0.1.2",
+  "undocumented": {
+    "prepare": "Wrapper lifecycle, for benchmark and owner-driven runs; named as a group under 'What this page leaves out'.",
+    "inspect": "Wrapper lifecycle, as above.",
+    "start": "Wrapper lifecycle, as above.",
+    "finish": "Wrapper lifecycle, as above.",
+    "health": "The superseded name of `gr doctor`, which the doctor section already names."
+  }
+}

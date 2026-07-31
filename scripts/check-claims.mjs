@@ -32,6 +32,13 @@
 
 import {readFile} from 'node:fs/promises';
 import {
+  COMMANDS,
+  PIN,
+  SURFACE,
+  documented,
+  rewrite,
+} from './product-reference.mjs';
+import {
   DOCTOR_CAPTURE,
   DOCTOR_OUTPUT,
   INSTALL_PROMPT,
@@ -51,9 +58,6 @@ const DOC = 'public/docs/install.md';
 
 /** Where the newest published release announces itself. */
 const LATEST = 'https://api.github.com/repos/heurema/goalrail/releases/latest';
-
-/** The page's copy of the same capture, which must not drift from the page. */
-const COMMANDS = 'public/docs/commands.md';
 
 /** One sentence stream, however the surface it came from wrapped it. */
 function normalize(text) {
@@ -219,18 +223,93 @@ report(
         ` says ${claimed ?? 'none'}; they are one capture and must agree`,
 );
 
+// --- the pinned release ----------------------------------------------------
+
+/**
+ * One release is what this site describes, and `product/pin.json` names it.
+ *
+ * Everything derived from the product is derived from that one tag: the flag
+ * tables the generator writes, the capture pasted above it. Bumping the pin is
+ * the act that pulls the site forward, and the assertions below are what make
+ * ignoring a release impossible rather than merely unwise.
+ */
+const pin = JSON.parse(await readFile(PIN, 'utf8'));
+const surface = JSON.parse(await readFile(SURFACE, 'utf8'));
+const commands = await readFile(COMMANDS, 'utf8');
+
 if (latest !== null) {
   report(
-    `the doctor capture is the current release (${latest})`,
-    captured === latest
+    `the pinned release is the newest one published (${latest})`,
+    pin.tag === latest
       ? null
-      : `      the page shows output from ${captured}, and ${latest} is` +
-          ' published. Re-run the capture against the release rather than' +
-          ' editing the version string — the other lines move too.',
+      : `      this site describes ${pin.tag} and ${latest} is published.` +
+          ' Bump the tag in product/pin.json, run `npm run sync:product`, and' +
+          ' read the diff: it is the list of what changed in the product, and' +
+          ' therefore the list of prose worth re-reading.',
   );
 }
 
-const commands = await readFile(COMMANDS, 'utf8');
+report(
+  'the doctor capture is the pinned release',
+  captured === pin.tag
+    ? null
+    : `      the capture is from ${captured} and the pin says ${pin.tag}.` +
+        ' Re-run it against the pinned release rather than editing the version' +
+        ' string — the other lines move with it.',
+);
+
+report(
+  'the recorded surface is the pinned release',
+  surface.tag === pin.tag
+    ? null
+    : `      product/surface.json was generated from ${surface.tag} and the pin` +
+        ` says ${pin.tag}; run \`npm run sync:product\``,
+);
+
+report(
+  `the generated blocks in ${COMMANDS} match that surface`,
+  commands === rewrite(commands, surface)
+    ? null
+    : '      a generated block was edited by hand, or the surface moved under' +
+        ' it. Run `npm run sync:product` and commit the result; the text inside' +
+        ' those markers belongs to the binary.',
+);
+
+/**
+ * The one assertion about completeness rather than correctness.
+ *
+ * Everything above compares something written with something true, which cannot
+ * notice a command that was never written about at all — and a product under
+ * active development grows commands. So every command the binary accepts must
+ * either have a section on the page or a reason in the pin. Leaving one out
+ * stays allowed; leaving one out silently does not.
+ */
+const teaches = documented(commands);
+const excused = pin.undocumented ?? {};
+const unexplained = surface.commands
+  .map(({name}) => name)
+  .filter((name) => !teaches.has(name) && !(name in excused));
+
+report(
+  'every command the binary accepts is documented or excused',
+  unexplained.length === 0
+    ? null
+    : `      ${unexplained.join(', ')} — neither a section in ${COMMANDS} nor` +
+        ' an entry in product/pin.json. Document it, or record why the page' +
+        ' does not, so the omission is a decision with a diff.',
+);
+
+const stale = Object.keys(excused).filter(
+  (name) => !surface.commands.some((entry) => entry.name === name),
+);
+
+report(
+  'nothing is excused that no longer exists',
+  stale.length === 0
+    ? null
+    : `      product/pin.json excuses ${stale.join(', ')}, which ${pin.tag}` +
+        ' does not accept; drop the entry',
+);
 
 report(
   `${COMMANDS} shows the same capture as the page`,
