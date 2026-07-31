@@ -166,6 +166,39 @@ counted, not estimated — a reviewer already rejected a draft sentence that sai
 - The site is deployed from this repository; check `README.md` and
   `.github/` for the deploy path before assuming how a change ships.
 
+## The tooling decision, settled
+
+Asked and answered on 2026-07-31: **this repository does not adopt the OpenSpec
+cycle.** The reasoning is recorded in `AGENTS.md` under "How changes are made
+here"; in short, the cycle protects promises and this repository makes none —
+it describes a product, so its failure mode is drift, and drift is caught by a
+check rather than by a specification. All fifteen findings in this brief are
+drift.
+
+What to build instead, and it is the cheaper half of the trade: make the page's
+product claims derived or verified rather than retyped. There is no test runner
+here today, so this is a small addition, and CI already has the shape for it —
+it asserts route behaviour, just not content truthfulness.
+
+Revisit condition: this repository starts holding state that is not its own. An
+admin surface is that, and it raises a product question before a tooling one —
+`goalrail`'s promoted record currently carries the non-goal "No hosted or
+multi-tenant observability", and whether the product acquires a hosted surface
+belongs to the cycle over there, exactly as retiring the no-update-check
+non-goal did. Whether such a surface lives in this repository at all is a second
+question: a static page behind nginx and an authenticated service with sessions
+share neither a deploy profile nor a security one.
+
+## Merging is deploying — read this before finishing anything
+
+There is no deploy command. A merge to `main` publishes an image that Flux rolls
+out to the live site within minutes. **The merge is the external act**, and it
+carries the gate that tagging a release carries in the product repository. CI
+lints, type-checks, builds the image, serves it and asserts the routes that have
+broken before; only then is the image published. A bad image cannot take the
+site down, because the running pod keeps serving until the new one is ready —
+but a false claim ships the moment the merge lands.
+
 ## Open questions for the intent
 
 1. Does the page adopt the README's agent prompt verbatim, or does one source
