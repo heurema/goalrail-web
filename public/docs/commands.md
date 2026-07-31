@@ -101,3 +101,14 @@ entries it did not add untouched.
 
 The binary's version and the overlay it carries. Nothing about a repository is
 decided by reading it — currency is decided by comparing digests.
+
+## What this page leaves out
+
+The binary also carries a wrapper lifecycle — `prepare`, `inspect`, `start`,
+`finish` — for benchmark and owner-driven runs rather than for ordinary work.
+It is the mechanism behind the fail-closed half of the guarantee that a
+malfunction never reaches your session: the background path stays quiet, and a
+wrapped run it cannot certify is refused.
+
+Nothing here documents it, because nothing above needs it. `gr help` lists every
+command the binary accepts, and `gr help <command>` describes one.
